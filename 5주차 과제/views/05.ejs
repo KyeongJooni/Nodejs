@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="data:,">
+    <style>
+        a {
+            text-decoration: none;
+            color: rgba(13, 7, 185, 0.859);
+            font-size: 13px;
+        }
+
+        p,
+        input,
+        textarea {
+            font-size: 10px;
+        }
+
+        .schedule-title {
+            font-size: 20px;
+        }
+
+        .no-data {
+            font-size: 14px;
+        }
+        ol {
+            list-style: none; /* 기본 번호 제거 */
+        }
+    </style>
+</head>
+
+<body>
+    <h2>개인일정관리</h2>
+    <hr>
+    <h3>이경준 202035191 일정목록</h3>
+
+    <ol>
+        <% var i=0; while (i < schedules.length) { %>
+            <li>
+                <a href="/page/<%= schedules[i].id %>">
+                    <%= i + 1 %>. <%= schedules[i].title %>
+                </a>
+            </li>
+            <% i++; } %>
+    </ol>
+
+    <hr>
+    <%- menu %>
+        <hr>
+        <%- detail %>
+
+</body>
+
+</html>

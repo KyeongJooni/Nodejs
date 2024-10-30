@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WEB1</title>
+    <meta charset="utf-8">
+    <link rel="icon" href="data:,">
+</head>
+
+<body>
+    <h1><a href="">
+            <%= title %>
+        </a></h1>
+    <h3>202035191 이경준</h3>
+    <a href="/author">author</a>
+    <ol type="1">
+        <% var i=0 while( i < list.length){ %>
+            <li><a href="/page/<%=list[i].id%>">
+                    <%=list[i].title%>
+                </a></li>
+            <% i +=1 } %>
+    </ol>
+
+    <%- menu%>
+        <%- body%>
+</body>
+
+</html>

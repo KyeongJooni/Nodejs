@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <meta charset="utf-8">
+    <link rel="icon" href="data:,">
+</head>
+<body>
+    <%= login %> <!-- 로그인 상태 UI 표시 -->
+    <h1><a href="/"><%= title %></a></h1>
+    <h3>202035191 이경준</h3>
+    <a href="/author">author</a>
+    <ol type="1">
+        <% var i = 0; %>
+        <% while (i < list.length) { %>
+            <li><a href="/page/<%= list[i].id %>"><%= list[i].title %></a></li>
+            <% i++; %> <!-- 인덱스 증가 -->
+        <% } %>
+    </ol>
+
+    <%- menu %>
+    <%- body %>
+</body>
+</html>
