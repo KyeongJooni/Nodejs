@@ -55,97 +55,104 @@
             </div>
             <ul class="sub-menu">
                <li><a class="link_name" href="#">Board</a></li>
-               <li><a href="#">Web Design</a></li>
-               <li><a href="#">Login Form</a></li>
-               <li><a href="#">Card Design</a></li>
+               <% var k=0; while(k < boardtypes.length) { %>
+                  <li>
+                     <a href="/board/view/<%=boardtypes[k].type_id%>/1">
+                        <%-boardtypes[k].title%>
+                     </a>
+                  </li>
+                  <% k++; } %>
             </ul>
          </li>
 
-         <li>
-            <a href="#">
-               <i class='bx bx-purchase-tag-alt'></i>
-               <span class="link_name">Purchase List</span>
-            </a>
-            <ul class="sub-menu blank">
-               <li><a class="link_name" href="#">Purchase List</a></li>
-            </ul>
-         </li>
-
-         <li>
-            <a href="#">
-               <i class='bx bx-cart'></i>
-               <span class="link_name">Cart</span>
-            </a>
-            <ul class="sub-menu blank">
-               <li><a class="link_name" href="#">Cart</a></li>
-            </ul>
-         </li>
-
-         <% if(cls==='MNG' ){ %>
-            <li>
-               <div class="icon-link">
-                  <a href="#">
-                     <i class='bx bx-data'></i>
-                     <span class="link_name">DB Admin</span>
-                  </a>
-                  <i class='bx bxs-chevron-down arrow'></i>
-               </div>
-               <ul class="sub-menu">
-                  <li><a class="link_name" href="#">DB Admin</a></li>
-                  <li><a href="#">Table Create</a></li>
-                  <li><a href="/code/view">code CRUD</a></li> 
-                  <li><a href="#">product CRUD</a></li>
-                  <li><a href="#">person CRUD</a></li>
-               </ul>
-            </li>
-         <% } %>
-
-         <% if(cls==='CEO' ){ %>
+         <% if(cls=='CST' ) { %>
             <li>
                <a href="#">
-                  <i class='bx bx-pie-chart-alt-2'></i>
-                  <span class="link_name">Analytic</span>
+                  <i class='bx bx-purchase-tag-alt'></i>
+                  <span class="link_name">Purchase List</span>
                </a>
                <ul class="sub-menu blank">
-                  <li><a class="link_name" href="#">Analytic</a></li>
+                  <li><a class="link_name" href="#">Purchase List</a></li>
                </ul>
             </li>
-         <% } %>
 
-         <li>
-            <div class="icon-link">
+            <li>
                <a href="#">
-                  <i class='bx bx-cog'></i>
-                  <span class="link_name">Setting</span>
+                  <i class='bx bx-cart'></i>
+                  <span class="link_name">Cart</span>
                </a>
-               <i class='bx bxs-chevron-down arrow'></i>
-            </div>
-            <ul class="sub-menu">
-               <li><a class="link_name" href="#">Setting</a></li>
-               <li><a href="/auth/register">회원가입</a></li>
-               <li><a href="#">아이디/비번 찾기</a></li>
-            </ul>
-         </li>
+               <ul class="sub-menu blank">
+                  <li><a class="link_name" href="#">Cart</a></li>
+               </ul>
+            </li>
+            <% } %>
 
-         <li>
-            <div class="profile-details">
-               <div class="profile-content">
-                  <img src="/image/guest.jpg" alt="profile">
-               </div>
-               <div class="name-job">
-                  <div class="profile_name">
-                     <%=who%>
-                  </div>
-                  <div class="job"></div>
-               </div>
+               <% if(cls==='MNG' ){ %>
+                  <li>
+                     <div class="icon-link">
+                        <a href="#">
+                           <i class='bx bx-data'></i>
+                           <span class="link_name">DB Admin</span>
+                        </a>
+                        <i class='bx bxs-chevron-down arrow'></i>
+                     </div>
+                     <ul class="sub-menu">
+                        <li><a class="link_name" href="#">DB Admin</a></li>
+                        <li><a href="#">Table Create</a></li>
+                        <li><a href="/code/view">code CRUD</a></li>
+                        <li><a href="/product/view">product CRUD</a></li>
+                        <li><a href="/person/view">person CRUD</a></li>
+                        <li><a href="/board/type/view">board type CRUD</a></li>
+                     </ul>
+                  </li>
+                  <% } %>
 
-               <% if (login){ %>
-                  <a href="/auth/logout_process"><i class='bx bx-log-out'></i></a>
-               <% } else { %>
-                  <a href="/auth/login"><i class='bx bx-log-in'></i></a>
-               <% } %>
-            </div>
-         </li>
+                     <% if(cls==='CEO' ){ %>
+                        <li>
+                           <a href="#">
+                              <i class='bx bx-pie-chart-alt-2'></i>
+                              <span class="link_name">Analytic</span>
+                           </a>
+                           <ul class="sub-menu blank">
+                              <li><a class="link_name" href="#">Analytic</a></li>
+                           </ul>
+                        </li>
+                        <% } %>
+
+                           <li>
+                              <div class="icon-link">
+                                 <a href="#">
+                                    <i class='bx bx-cog'></i>
+                                    <span class="link_name">Setting</span>
+                                 </a>
+                                 <i class='bx bxs-chevron-down arrow'></i>
+                              </div>
+                              <ul class="sub-menu">
+                                 <li><a class="link_name" href="#">Setting</a></li>
+                                 <li><a href="/auth/register">회원가입</a></li>
+                                 <li><a href="#">아이디/비번 찾기</a></li>
+                              </ul>
+                           </li>
+
+                           <li>
+                              <div class="profile-details">
+                                 <div class="profile-content">
+                                    <img src="/image/guest.jpg" alt="profile">
+                                 </div>
+                                 <div class="name-job">
+                                    <div class="profile_name">
+                                       <%=who%>
+                                    </div>
+                                    <div class="job"></div>
+                                 </div>
+
+                                 <% if (login){ %>
+                                    <a href="/auth/logout_process"><i class='bx bx-log-out'></i></a>
+                                    <% } else { %>
+                                       <a href="/auth/login"><i class='bx bx-log-in'></i></a>
+                                       <% } %>
+                              </div>
+                           </li>
 
       </ul>
    </div>
@@ -154,6 +161,14 @@
          <i class='bx bx-menu'></i>
          <span class="text">Drop Down Sidebar</span>
       </div>
+      <div>
+         <form class="d-flex" role="search" action="/shop/search" method="post">
+            <input class="form-contorl me-1" style="width : 150px;margin-left: 50px;" type="search" placeholder="Search"
+               aria-label="Search" name="Search" />
+            <button class="btn btn-outline-success" type="submit">Search</button>
+         </form>
+      </div>
+      &nbsp;
       <div class="home-content2">
          <%- include(body) %>
       </div>

@@ -1,7 +1,7 @@
-const db = require('./db');
-const sanitizeHtml = require('sanitize-html');
+var db = require('./db');
+var sanitizeHtml = require('sanitize-html');
 
-function authIsOwner(req) {
+function authIsOwner(req, res) {
     var name = 'Guest';
     var login = false;
     var cls = 'NON';
@@ -10,52 +10,50 @@ function authIsOwner(req) {
         login = true;
         cls = req.session.cls;
     }
-    return { name, login, cls };
+    return { name, login, cls }
 }
 
 module.exports = {
     view: (req, res) => {
-        const { name, login, cls } = authIsOwner(req);
-        db.query('SELECT * FROM code', (err, results) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).send('데이터를 가져오는 중 오류가 발생했습니다.');
-            }
-            const context = {
+        var sql1 = 'SELECT * FROM code;';
+        var sql2 = 'SELECT * FROM boardtype;';
+        db.query(sql1 + sql2, (error, results) => {
+            if (error) { throw error; }
+            var { name, login, cls } = authIsOwner(req, res);
+            var codes = results[0];
+            var boardtypes = results[1];
+
+            var context = {
                 who: name,
                 login: login,
                 body: 'code.ejs',
                 cls: cls,
-                codes: results
+                boardtypes: boardtypes,
+                codes: codes
             };
-            req.app.render('mainFrame', context, (err, html) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).send('페이지 렌더링 중 오류가 발생했습니다.');
-                }
+            res.render('mainFrame', context, (err, html) => {
                 res.end(html);
             });
         });
     },
-
     create: (req, res) => {
-        const { name, login, cls } = authIsOwner(req);
-        const context = {
-            who: name,
-            login: login,
-            body: 'codeCU.ejs',
-            cls: cls,
-            mode: 'create'
-        };
-        req.app.render('mainFrame', context, (err, html) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).send('페이지 렌더링 중 오류가 발생했습니다.');
-            }
-            res.end(html);
+        db.query('SELECT * FROM boardtype', (error, boardtypes) => {
+            if (error) { throw error; }
+            var { name, login, cls } = authIsOwner(req, res);
+
+            var context = {
+                who: name,
+                login: login,
+                body: 'codeCU.ejs',
+                cls: cls,
+                boardtypes: boardtypes,
+                mode: 'create' // codeCU.ejs 에 넘겨줄 변수
+            };
+            res.render('mainFrame', context, (err, html) => {
+                res.end(html);
+            });
         });
     },
-
     create_process: (req, res) => {
         const post = req.body;
         const sanitizedMainId = sanitizeHtml(post.main_id);
@@ -80,46 +78,78 @@ module.exports = {
     },
 
     update: (req, res) => {
+        // URL에서 main, sub, start, end 값을 추출
         const { main, sub, start, end } = req.params;
+
+        // 사용자 인증 정보 가져오기
         const { name, login, cls } = authIsOwner(req);
+
+        // SQL 쿼리문 작성: 코드가 존재하는지 확인
         const sql = 'SELECT * FROM code WHERE main_id = ? AND sub_id = ? AND start = ? AND end = ?';
         db.query(sql, [main, sub, start, end], (err, results) => {
             if (err) {
                 console.error(err);
                 return res.status(500).send('데이터를 가져오는 중 오류가 발생했습니다.');
             }
+
+            // 해당하는 코드가 없으면 404 에러 반환
             if (results.length === 0) {
                 return res.status(404).send('코드를 찾을 수 없습니다.');
             }
-            const context = {
-                who: name,
-                login: login,
-                body: 'codeCU.ejs',
-                cls: cls,
-                code: results[0],
-                mode: 'update'
-            };
-            req.app.render('mainFrame', context, (err, html) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).send('페이지 렌더링 중 오류가 발생했습니다.');
+
+            // 수정할 코드와 함께 보드 타입 가져오기
+            const sql2 = 'SELECT * FROM boardtype';
+            db.query(sql2, (error, boardtypes) => {
+                if (error) {
+                    console.error(error);
+                    return res.status(500).send('보드 타입을 가져오는 중 오류가 발생했습니다.');
                 }
-                res.end(html);
+
+                // 코드 수정 폼 렌더링
+                const context = {
+                    who: name,
+                    login: login,
+                    body: 'codeCU.ejs', // 수정 폼을 위한 EJS 파일
+                    cls: cls,
+                    code: results[0], // 수정할 코드 데이터
+                    boardtypes: boardtypes, // 보드 타입 데이터
+                    mode: 'update' // 수정 모드 표시
+                };
+
+                // 페이지 렌더링
+                req.app.render('mainFrame', context, (err, html) => {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).send('페이지 렌더링 중 오류가 발생했습니다.');
+                    }
+                    res.end(html);
+                });
             });
         });
     },
 
+
     update_process: (req, res) => {
         const { main_id, sub_id, main_name, sub_name, start, end } = req.body;
+    
+        // 배열에서 첫 번째 값만 가져오기
+        const startValue = Array.isArray(start) ? start[0] : start;
+        const endValue = Array.isArray(end) ? end[0] : end;
+    
         const sql = `
             UPDATE code 
             SET main_name = ?, sub_name = ?, start = ?, end = ? 
-            WHERE main_id = ? AND sub_id = ? AND start = ? AND end = ?
+            WHERE main_id = ? AND sub_id = ?
         `;
-        const params = [main_name, sub_name, start, end, main_id, sub_id, start, end];
+    
+        // 파라미터 배열에 단일 값 사용
+        const params = [main_name, sub_name, startValue, endValue, main_id, sub_id];
+        console.log("Executing SQL:", sql);
+        console.log("With parameters:", params);
+    
         db.query(sql, params, (err) => {
             if (err) {
-                console.error(err);
+                console.error("SQL Error:", err);
                 return res.status(500).send('코드 업데이트 중 오류가 발생했습니다.');
             }
             res.redirect('/code/view');
@@ -137,4 +167,4 @@ module.exports = {
             res.redirect('/code/view');
         });
     },
-};
+}

@@ -1,31 +1,45 @@
 const db = require('./db');
-var sanitizeHtml = require('sanitize-html');
+
 function authIsOwner(req, res) {
     var name = 'Guest';
     var login = false;
     var cls = 'NON';
-    if (req.session.is_logined) {
+    if(req.session.is_logined) {
         name = req.session.name;
         login = true;
         cls = req.session.cls;
     }
     return { name, login, cls }
 }
+
 module.exports = {
-    home: (req, res) => {
-        var { login, name, cls } = authIsOwner(req, res)
-        var sql2 = ` select * from product;`
-        db.query(sql2, (error, results) => {
-            var context = {
-                /*********** mainFrame.ejs에 필요한 변수 ***********/
-                who : name,
+    home : (req, res) => {
+        var sql1 = 'SELECT * FROM boardtype;';
+        var sql2 = `SELECT * FROM product;`;
+        db.query(sql1 + sql2, (error, results) => {
+            if(error) { throw error; }
+            var {name, login, cls} = authIsOwner(req, res);
+            var body = '';
+            var boardtypes = results[0];
+            var products = results[1];
+            if(products.length == 0) { 
+                body = 'test.ejs'; 
+            } else {
+                body = 'product.ejs'; 
+            }
+    
+            var context = { 
+                who : name, 
                 login : login,
-                body : 'test.ejs',
-                cls : cls
+                body : body,
+                cls : cls,
+                boardtypes : boardtypes,
+                products : products, 
+                path : 'root'
             };
             res.render('mainFrame', context, (err, html) => {
-                res.end(html)
-            }); //render end
-        }); //query end
-    },
+                res.end(html);
+            });
+        });
+    }
 }
